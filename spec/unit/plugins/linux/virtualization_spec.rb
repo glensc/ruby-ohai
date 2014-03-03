@@ -32,6 +32,8 @@ describe Ohai::System, "Linux virtualization platform" do
     File.stub(:exists?).with("/proc/self/status").and_return(false)
     File.stub(:exists?).with("/proc/bc/0").and_return(false)
     File.stub(:exists?).with("/proc/vz").and_return(false)
+    File.stub(:exists?).with("/proc/1/cpuset").and_return(false)
+    File.stub(:exists?).with("/proc/1/environ").and_return(false)
   end
 
   describe "when we are checking for xen" do
@@ -259,6 +261,26 @@ VBOX
       File.should_receive(:exists?).with("/proc/vz").and_return(false)
       @plugin.run
       @plugin[:virtualization].should == {}
+    end
+  end
+
+  describe "when we are checking for Linux-LXC" do
+    it "should set LXC host if /proc/1/cpuset exists and /var/lib/lxc directory exists" do
+      File.should_receive(:exists?).with("/proc/1/cpuset").and_return(true)
+      File.should_receive(:read).with("/proc/1/cpuset").and_return("/\n")
+      File.should_receive(:directory?).with("/var/lib/lxc").and_return(true)
+      @plugin.run
+      @plugin[:virtualization][:system].should == "linux-lxc"
+      @plugin[:virtualization][:role].should == "host"
+    end
+
+    it "should set LXC guest if /proc/1/cpuset exists and /proc/1/environ contains container=lxc" do
+      File.should_receive(:exists?).with("/proc/1/cpuset").and_return(true)
+      File.should_receive(:read).with("/proc/1/cpuset").and_return("/lxc/container\n")
+      File.should_receive(:read).with("/proc/1/environ").and_return("container=lxc\n")
+      @plugin.run
+      @plugin[:virtualization][:system].should == "linux-lxc"
+      @plugin[:virtualization][:role].should == "guest"
     end
   end
 
