@@ -41,6 +41,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "xen"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:xen].should == "guest"
     end
 
     it "should set xen host if /proc/xen/capabilities contains control_d " do
@@ -50,6 +51,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "xen"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems][:xen].should == "host"
     end
 
     it "should set xen guest if /proc/xen/capabilities exists but is empty" do
@@ -59,12 +61,13 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "xen"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:xen].should == "guest"
     end
 
     it "should not set virtualization if xen isn't there" do
       File.should_receive(:exists?).at_least(:once).and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
@@ -75,6 +78,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "kvm"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems][:kvm].should == "host"
     end
 
     it "should set kvm guest if /proc/cpuinfo contains QEMU Virtual CPU" do
@@ -83,6 +87,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "kvm"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:kvm].should == "guest"
     end
 
     it "should set kvm guest if /proc/cpuinfo contains Common KVM processor" do
@@ -91,6 +96,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "kvm"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:kvm].should == "guest"
     end
 
     it "should set kvm guest if /proc/cpuinfo contains Common 32-bit KVM processor" do
@@ -99,12 +105,13 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "kvm"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:kvm].should == "guest"
     end
 
     it "should not set virtualization if kvm isn't there" do
       File.should_receive(:exists?).at_least(:once).and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
@@ -115,6 +122,7 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "vbox"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems][:vbox].should == "host"
     end
 
     it "should set vbox gues if /proc/modules contains vboxguest" do
@@ -123,12 +131,13 @@ describe Ohai::System, "Linux virtualization platform" do
       @plugin.run
       @plugin[:virtualization][:system].should == "vbox"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:vbox].should == "guest"
     end
 
     it "should not set virtualization if vbox isn't there" do
       File.should_receive(:exists?).at_least(:once).and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
@@ -151,6 +160,7 @@ MSVPC
       @plugin.run
       @plugin[:virtualization][:system].should == "virtualpc"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:virtualpc].should == "guest"
     end
 
     it "should set vmware guest if dmidecode detects VMware Virtual Platform" do
@@ -169,6 +179,7 @@ VMWARE
       @plugin.run
       @plugin[:virtualization][:system].should == "vmware"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:vmware].should == "guest"
     end
 
     it "should set vbox guest if dmidecode detects Oracle Corporation" do
@@ -189,12 +200,13 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "vbox"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:vbox].should == "guest"
     end
 
     it "should run dmidecode and not set virtualization if nothing is detected" do
       @plugin.stub(:shell_out).with("dmidecode").and_return(mock_shell_out(0, "", ""))
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
@@ -205,6 +217,7 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "linux-vserver"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems]['linux-vserver'].should == "host"
     end
 
     it "should set Linux-VServer host if /proc/self/status contains VxID: 0" do
@@ -213,6 +226,7 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "linux-vserver"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems]['linux-vserver'].should == "host"
     end
 
     it "should set Linux-VServer guest if /proc/self/status contains s_context > 0" do
@@ -221,6 +235,7 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "linux-vserver"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems]['linux-vserver'].should == "guest"
     end
 
     it "should set Linux-VServer guest if /proc/self/status contains VxID > 0" do
@@ -229,12 +244,13 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "linux-vserver"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems]['linux-vserver'].should == "guest"
     end
 
     it "should not set virtualization if Linux-VServer isn't there" do
       File.should_receive(:exists?).at_least(:once).and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
@@ -244,6 +260,7 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "openvz"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems][:openvz].should == "host"
     end
 
     it "should set openvz guest if /proc/bc/0 doesn't exist and /proc/vz exists" do
@@ -252,18 +269,19 @@ VBOX
       @plugin.run
       @plugin[:virtualization][:system].should == "openvz"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:openvz].should == "guest"
     end
 
     it "should not set virtualization if openvz isn't there" do
       File.should_receive(:exists?).with("/proc/bc/0").and_return(false)
       File.should_receive(:exists?).with("/proc/vz").and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
   it "should not set virtualization if no tests match" do
     @plugin.run
-    @plugin[:virtualization].should == {}
+    @plugin[:virtualization].should == {'systems' => {}}
   end
 end

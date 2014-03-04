@@ -21,7 +21,6 @@ Ohai.plugin(:Virtualization) do
 
   collect_data(:linux) do
     virtualization Mash.new
-
     virtualization[:systems] = Mash.new
 
     # if it is possible to detect paravirt vs hardware virt, it should be put in
