@@ -298,6 +298,7 @@ CGROUP
       @plugin.run
       @plugin[:virtualization][:system].should == "lxc"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:lxc].should == "guest"
     end
 
     it "should set lxc guest if /proc/self/cgroup exist and there are /lxc/<name> mounts" do
@@ -316,6 +317,7 @@ CGROUP
       @plugin.run
       @plugin[:virtualization][:system].should == "lxc"
       @plugin[:virtualization][:role].should == "guest"
+      @plugin[:virtualization][:systems][:lxc].should == "guest"
     end
 
     it "should not set anyting if /proc/self/cgroup exist and the cgroup is named arbitrarily, it isn't necessarily lxc." do
@@ -351,6 +353,7 @@ CGROUP
       @plugin.run
       @plugin[:virtualization][:system].should == "lxc"
       @plugin[:virtualization][:role].should == "host"
+      @plugin[:virtualization][:systems][:lxc].should == "host"
     end
 
     it "should not set virtualization if /proc/self/cgroup isn't there" do

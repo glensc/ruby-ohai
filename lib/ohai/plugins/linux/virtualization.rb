@@ -164,9 +164,11 @@ Ohai.plugin(:Virtualization) do
       if File.read("/proc/self/cgroup") =~ %r{^\d+:.+:/lxc/.+$}
         virtualization[:system] = "lxc"
         virtualization[:role] = "guest"
+        virtualization[:systems][:lxc] = "guest"
       elsif File.read("/proc/self/cgroup") =~ %r{\d:.+:/$}
         virtualization[:system] = "lxc"
         virtualization[:role] = "host"
+        virtualization[:systems][:lxc] = "host"
       end
     end
   end
