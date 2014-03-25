@@ -318,7 +318,7 @@ CGROUP
       @plugin[:virtualization][:role].should == "guest"
     end
 
-    it "should set not set anyting if /proc/self/cgroup exist and the cgroup is named arbitrarily, it isn't necessarily lxc." do
+    it "should not set anyting if /proc/self/cgroup exist and the cgroup is named arbitrarily, it isn't necessarily lxc." do
       self_cgroup=<<-CGROUP
 8:blkio:/Charlie
 7:net_cls:/Charlie
@@ -332,7 +332,7 @@ CGROUP
       File.should_receive(:exists?).with("/proc/self/cgroup").and_return(true)
       File.stub(:read).with("/proc/self/cgroup").and_return(self_cgroup)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
 
     it "should set lxc host if /proc/self/cgroup only has / mounts" do
@@ -356,7 +356,7 @@ CGROUP
     it "should not set virtualization if /proc/self/cgroup isn't there" do
       File.should_receive(:exists?).with("/proc/self/cgroup").and_return(false)
       @plugin.run
-      @plugin[:virtualization].should == {}
+      @plugin[:virtualization].should == {'systems' => {}}
     end
   end
 
